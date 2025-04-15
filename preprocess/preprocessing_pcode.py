@@ -24,6 +24,8 @@ from collections import Counter
 from collections import defaultdict
 from tqdm import tqdm
 
+from multiprocessing import Pool, cpu_count
+
 GRAPH_TYPES = ['ISCG','TSCG','SOG']
 
 def parse_nxopr(pcode_asm):
@@ -170,6 +172,8 @@ def token_mapping(input_folder, output_dir, freq_mode=True):
                 jj = json.load(f_in)
 
             arch = f_json.split('-')[0][:-2]
+            if arch not in ["mips", "arm", "x"]:
+                arch = "x"
             idb_path = list(jj.keys())[0]
             j_data = jj[idb_path]
             for key in ['arch']:
@@ -339,37 +343,47 @@ def coo_matrix_to_str(cmat):
 
 def process_one_file(args):
     json_path, opc_dicts, dump_str, dump_pkl = args
-    with open(json_path) as f_in:
-        jj = json.load(f_in)
-    f_json = os.path.basename(json_path)
-    arch = f_json.split('-')[0][:-2]
-    idb_path = list(jj.keys())[0]
-    # print("[D] Processing: {}".format(idb_path))
-    str_func_dict, pkl_func_dict = defaultdict(dict), defaultdict(dict)
-    j_data = jj[idb_path]
+
+    with open(json_path) as f:
+        data = json.load(f)
+
+    file_name = os.path.basename(json_path)
+    arch = file_name.split('-')[0][:-2]
+    if arch not in ["mips", "arm", "x"]:
+        arch = "x"
+
+    idb_path = list(data.keys())[0]
+    func_data = data[idb_path]
+
+    # Clean up metadata keys
     for key in ['arch', 'failed_functions', 'overrange_functions', 'underrange_functions']:
-        if key in j_data:
-            del j_data[key]
-    # Iterate over each function
-    for fva in j_data:
+        func_data.pop(key, None)
+
+    str_output = defaultdict(dict)
+    pkl_output = defaultdict(dict)
+
+    for fva, graph_data in func_data.items():
         for gtype in GRAPH_TYPES:
-            fva_data = j_data[fva][gtype]
-            g_coo_mat, nodes = create_graph(fva_data)
-            f_list = create_features_matrix(
-                nodes, fva_data, opc_dicts[gtype], gtype, arch)
+            g_coo_mat, nodes = create_graph(graph_data[gtype])
+            f_list = create_features_matrix(nodes, graph_data[gtype], opc_dicts[gtype], gtype, arch)
+
+            # Normalize address format
             if not fva.startswith("0x"):
-                fva = hex(int(fva, 10))
+                fva = hex(int(fva))
+
             if dump_str:
-                str_func_dict[gtype][fva] = {
+                str_output[gtype][fva] = {
                     'graph': coo_matrix_to_str(g_coo_mat),
                     'opc': f_list
                 }
+
             if dump_pkl:
-                pkl_func_dict[gtype][fva] = {
+                pkl_output[gtype][fva] = {
                     'graph': coo2tuple(g_coo_mat),
                     'opc': f_list
                 }
-    return idb_path, str_func_dict, pkl_func_dict
+
+    return idb_path, str_output, pkl_output
 
 
 def create_functions_dict(input_folder, opc_dicts, dump_str, dump_pkl):
@@ -391,14 +405,25 @@ def create_functions_dict(input_folder, opc_dicts, dump_str, dump_pkl):
             continue
         json_path = os.path.join(input_folder, f_json)
         args.append((json_path, opc_dicts, dump_str, dump_pkl))
+
+    #with Pool(processes=cpu_count()-2) as pool:
+    #    for idb_path, str_func_one, pkl_func_one in tqdm(pool.imap_unordered(process_one_file, args), total=len(args)):
+    #        if dump_str:
+    #            for gtype, data in str_func_one.items():
+    #                str_func_dict[gtype][idb_path] = data
+    #        if dump_pkl:
+    #            for gtype, data in pkl_func_one.items():
+    #                pkl_func_dict[gtype][idb_path] = data
+
     for idb_path, str_func_one, pkl_func_one in \
         tqdm(map(process_one_file, args), total=len(args)):
-        if dump_str:
-            for gtype, data in str_func_one.items():
-                str_func_dict[gtype][idb_path] = data
-        if dump_pkl:
-            for gtype, data in pkl_func_one.items():
-                pkl_func_dict[gtype][idb_path] = data
+            if dump_str:
+                for gtype, data in str_func_one.items():
+                    str_func_dict[gtype][idb_path] = data
+            if dump_pkl:
+                for gtype, data in pkl_func_one.items():
+                    pkl_func_dict[gtype][idb_path] = data
+
     return str_func_dict, pkl_func_dict
 
 
@@ -458,14 +483,17 @@ def main(input_dir, training, freq_mode, opcodes_json, output_dir, dataset, out_
     # Two 
     dump_str = out_format == "json" or out_format == "both"
     dump_pkl = out_format == "pkl" or out_format == "both"
+
     str_dict, pkl_dict = create_functions_dict(
         input_dir, opc_dicts, dump_str, dump_pkl)
+
     for gtype, g_str_dict in str_dict.items():
         o_json = "graph_func_dict_opc_{}.json".format(freq_mode)
         sub_dir = get_sub_dir(output_dir, gtype, dataset)
         output_path = os.path.join(sub_dir, o_json)
         with open(output_path, 'w') as f_out:
             json.dump(g_str_dict, f_out)
+
     for gtype, g_pkl_dict in pkl_dict.items():
         o_json = "graph_func_dict_opc_{}.pkl".format(freq_mode)
         sub_dir = get_sub_dir(output_dir, gtype, dataset)

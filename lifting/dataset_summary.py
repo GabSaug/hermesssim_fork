@@ -16,7 +16,7 @@
 import argparse
 import json
 import pandas
-from os.path import join, basename
+from os.path import join, basename, isfile
 from tqdm import tqdm
 
 
@@ -27,9 +27,13 @@ def get_bin_name(idb_path):
 
 
 def get_acfg_features_json(acfg_jsons_folder, bin_name):
-    json_fp = join(acfg_jsons_folder, bin_name + "_acfg_features.json")
-    with open(json_fp, "r") as f:
-        obj = json.load(f)
+    json_fp = join(acfg_jsons_folder, bin_name + "_acfg_disasm.json")
+    if isfile(json_fp):
+        with open(json_fp, "r") as f:
+            obj = json.load(f)
+    else:
+        print(f"Error, {json_fp} not found")
+        obj = None
     return obj
 
 
@@ -65,7 +69,7 @@ if __name__ == "__main__":
 
     summary = {}
     df = pandas.read_csv(ds_info_csv)
-    for idx, row in tqdm(df.iterrows(), total=df.size):
+    for idx, row in tqdm(df.iterrows(), total=df.shape[0]):
         idb_path = row['idb_path']
         finfo = get_func_info(row)
         if summary.get(idb_path, None) is None:
@@ -75,14 +79,16 @@ if __name__ == "__main__":
 
     for idb_path, finfos in tqdm(summary.items()):
         bin_name = get_bin_name(idb_path)
-        acfg_feats = get_acfg_features_json(cfgs_folder, bin_name)[idb_path]
-        for finfo in finfos:
-            fva = finfo["start_ea"]
-            finfo["edges"] = acfg_feats[fva]["edges"]
-            for bb_va, bb_feats in acfg_feats[fva]["basic_blocks"].items():
-                bb_va_hex = hex(int(bb_va))
-                finfo["nodes"].append([bb_va_hex, bb_feats["bb_len"]])
-        summary_fn = join(summary_folder, bin_name + "_cfg_summary.json")
-        with open(summary_fn, "w") as f:
-            json.dump({idb_path: finfos}, f)
-        summary[idb_path] = None
+        acfg_feat_json = get_acfg_features_json(cfgs_folder, bin_name)
+        if acfg_feat_json is not None:
+            acfg_feats = acfg_feat_json[idb_path]
+            for finfo in finfos:
+                fva = finfo["start_ea"]
+                finfo["edges"] = acfg_feats[fva]["edges"]
+                for bb_va, bb_feats in acfg_feats[fva]["basic_blocks"].items():
+                    bb_va_hex = hex(int(bb_va))
+                    finfo["nodes"].append([bb_va_hex, bb_feats["bb_len"]])
+            summary_fn = join(summary_folder, bin_name + "_cfg_summary.json")
+            with open(summary_fn, "w") as f:
+                json.dump({idb_path: finfos}, f)
+            summary[idb_path] = None

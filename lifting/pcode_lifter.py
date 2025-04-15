@@ -41,7 +41,7 @@ AR_OBJ_MAP = {
 def idb_path_to_binary_path(idb_path):
     assert idb_path[-4:] == ".i64" or idb_path[-4:] == ".idb"
     assert idb_path[:5] == "IDBs/"
-    return "binaries" + idb_path[4:-4]
+    return "../../Binaries/" + idb_path[4:-4]
 
 
 def extract_time(out: str):
@@ -60,7 +60,7 @@ def do_one_extractor(
     bin_fp = idb_path_to_binary_path(idb_fp)
     bin_base = os.path.basename(bin_fp)
     output_name = bin_base + ACFG_POSTFIX
-    output_fp = os.path.join(output_dir, output_name)
+    output_fp = os.path.join(os.path.realpath(output_dir), output_name)
 
     if firmware_info is not None:
         language_id, load_addr = firmware_info

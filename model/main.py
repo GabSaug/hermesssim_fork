@@ -52,15 +52,20 @@ def update(d, u):
 
 def iter_configs(args):
     COMMAN = "common"
+
     with open(args.config, "r") as f:
         tunning_params = json.load(f)
+
     base_output_dir = args.outputdir if args.outputdir is not None else "Results"
     common_config = {}
+
     if COMMAN in tunning_params:
         common_config = tunning_params[COMMAN]
         del tunning_params[COMMAN]
+
     log_fh = None
     global log
+
     for desc, params in tunning_params.items():
         repeating = params.get('repeating', 1)
         args.outputdir = None
@@ -89,7 +94,7 @@ def iter_configs(args):
             if repeating > 1:
                 args.outputdir = join(item_outputdir, idx)
                 os.mkdir(args.outputdir)
-            
+
             # Create logger
             if log_fh is not None:
                 log.removeHandler(log_fh)
@@ -159,7 +164,7 @@ def main():
                         help='Number of training epochs')
 
     parser.add_argument('--dataset', required=True,
-                        choices=['one', 'rtos'],
+                        choices=['one', 'rtos', 'muaz'],
                         help='Choose the dataset to use for the train or test')
 
     parser.add_argument('--config', required=True,
