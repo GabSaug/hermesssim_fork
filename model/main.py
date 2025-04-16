@@ -18,6 +18,7 @@ import collections
 import os
 import json
 
+from pathlib import Path
 from datetime import datetime
 
 from os.path import join, basename, isdir
@@ -85,7 +86,7 @@ def iter_configs(args):
 
         # Create the output directory
         if not isdir(args.outputdir):
-            os.mkdir(args.outputdir)
+            Path(args.outputdir).mkdir(parents=True, exist_ok=True)
             print("Created outputdir: {}".format(args.outputdir))
 
         testing = params.get('is_testing', False)
@@ -102,13 +103,17 @@ def iter_configs(args):
                                                  args.outputdir, "tunning")
 
             if testing:
-                config = load_config_from_json(args.outputdir)
+                #config = load_config_from_json(args.outputdir)
+                config = {"training":dict(),
+                          "validation":dict(),
+                          "testing":dict()}
                 config = update_config(config, args)
             else:
                 config = get_config(args)
             update(config, common_config)
             update(config, params)
 
+            breakpoint()
             yield config, desc, testing
 
 
@@ -145,7 +150,7 @@ def main():
     parser.add_argument('-d', '--debug', action='store_true',
                         help='Log level debug')
 
-    parser.add_argument("--inputdir", default="/dbs",
+    parser.add_argument("--inputdir", default="./dbs",
                         help="Path to the Input dir (DBs)")
 
     # featuresdir and feature_json_name can be specified in \
@@ -186,7 +191,7 @@ def main():
 
     # Create the output directory
     if not isdir(args.outputdir):
-        os.mkdir(args.outputdir)
+        Path(args.outputdir).mkdir(parents=True)
         print("Created outputdir: {}".format(args.outputdir))
 
     # Iter config items

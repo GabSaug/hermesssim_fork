@@ -282,7 +282,7 @@ class GNNModel:
             os.mkdir(self._checkpoint_path)
 
         # Set random seeds
-        seed = config['seed']
+        seed = 42
         random.seed(seed)
         np.random.seed(seed + 1)
 
@@ -296,7 +296,8 @@ class GNNModel:
 
     def _get_model_name(self):
         """Return the name of the model based to the configuration."""
-        training_mode = self._config['training']['mode']
+        #training_mode = self._config['training']['mode']
+        training_mode = "batch_pair"
         feature_name = self._config['testing']['features_testing_path']
         feature_name = basename(dirname(dirname(feature_name)))
         model_name = "graph-{}-{}-{}".format("ggnn",
@@ -368,7 +369,8 @@ class GNNModel:
         return os.path.join(self._checkpoint_path, all_cps[0][0])
 
     def _restore_model(self, ckpt=None):
-        checkpoint = torch.load(ckpt)
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        checkpoint = torch.load(ckpt, map_location=device)
         self._model.load_state_dict(checkpoint['model_state_dict'])
         if getattr(self, '_optimizer', None) is not None:
             self._optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
