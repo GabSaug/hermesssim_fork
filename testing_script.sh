@@ -8,12 +8,14 @@ mkdir -p ./dbs/Dataset-1/cfg_summary/testing/
 mkdir -p ./dbs/Dataset-1/features/testing/
 cp ../../DBs/Dataset-Muaz/testing_Dataset-Muaz.csv ./dbs/Dataset-1/testing_Dataset-1.csv
 
+echo 1
 python3 lifting/dataset_summary.py \
     --cfg_summary ./dbs/Dataset-1/cfg_summary/testing \
     --dataset_info_csv ../../DBs/Dataset-Muaz/testing_Dataset-Muaz.csv \
     --cfgs_folder ../../DBs/Dataset-Muaz/features/acfg_disasm
 
 # Then, lifting binaries
+echo 2
 python3 lifting/pcode_lifter.py \
     --cfg_summary ./dbs/Dataset-1/cfg_summary/testing \
     --output_dir ./dbs/Dataset-1/features/testing/pcode_raw_Dataset-1_testing \
@@ -25,16 +27,17 @@ python3 lifting/pcode_lifter.py \
 
 mkdir -p inputs/pcode
 
+echo 3
 echo "Processing Dataset-1_testing"
 python preprocess/preprocessing_pcode.py \
     --freq-mode -f pkl -s Dataset-1_testing \
-    -i dbs/Dataset-1/features/testing/pcode-raw_Dataset-1_testing \
+    -i dbs/Dataset-1/features/testing/pcode_raw_Dataset-1_testing \
     -o inputs/pcode
 
 # Model Training / Inferring
-#
 
-python3 model/main.py --debug --dataset=one --config ./my_config2.json --test-outdir ./outputs/ -o ./outputs/ --device cpu
+echo 4
+python3 model/main.py --debug --dataset=one --config ./my_config2.json --test_outdir ./outputs/ -o ./outputs/ --device cpu
 
 		# copy the output Dataset-1 to dataset-Muaz file
 

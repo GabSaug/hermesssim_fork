@@ -113,7 +113,6 @@ def iter_configs(args):
             update(config, common_config)
             update(config, params)
 
-            breakpoint()
             yield config, desc, testing
 
 
