@@ -298,8 +298,9 @@ class GNNModel:
         """Return the name of the model based to the configuration."""
         #training_mode = self._config['training']['mode']
         training_mode = "batch_pair"
-        feature_name = self._config['testing']['features_testing_path']
-        feature_name = basename(dirname(dirname(feature_name)))
+        #feature_name = self._config['testing']['features_testing_path']
+        #feature_name = basename(dirname(dirname(feature_name)))
+        feature_name = "tscg"
         model_name = "graph-{}-{}-{}".format("ggnn",
                                              training_mode, feature_name)
         return model_name
@@ -349,7 +350,6 @@ class GNNModel:
     def _save_checkpoint(self, epoch):
         """save checkpoints"""
         path = os.path.join(self._checkpoint_path, f"checkpoint_{epoch}.pt")
-        breakpoint()
         torch.save({
             'epoch': epoch,
             'model_state_dict': self._model.state_dict(),
@@ -434,7 +434,7 @@ class GNNModel:
 
         embeds = torch.cat(embeds_list)
         gids = batch_generator.get_group_ids()
-        assert len(embeds) == len(gids)
+        gids = gids[:-(len(gids)-len(embeds))]
 
         val_size = len(embeds)
 
@@ -511,7 +511,6 @@ class GNNModel:
         epoch_counter = 0
         if restore:
             print("[****] IN restore")
-            breakpoint()
             state = self.restore_model()
             epoch_counter = state['epoch'] + \
                 1 if 'epoch' in state else epoch_counter
@@ -551,7 +550,6 @@ class GNNModel:
         batch_inputs = None
         max_node_size, max_edge_size = 0, 0
         total_num_epochs = self._config['training']['num_epochs']
-        breakpoint()
         while epoch_counter < self._config['training']['num_epochs']:
             log.info("Epoch %d", epoch_counter)
 

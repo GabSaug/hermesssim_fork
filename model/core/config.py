@@ -114,6 +114,27 @@ def load_config_from_json(workingdir):
         config = json.load(f)
     return config
 
+def update_config_datasetadv(config_dict, inputdir, outputdir, featuresdir, feature_json_name):
+    """Config for Dataset-1."""
+    inputdir = os.path.join(inputdir, "Dataset-adv")
+
+    # Training
+    func_csv_fn = "training_Dataset-adv.csv"
+    config_dict['training']['df_train_path'] = \
+        os.path.join(inputdir, func_csv_fn)
+    config_dict['training']['features_train_path'] = \
+        os.path.join(
+            featuresdir, 'Dataset-adv_training',
+            feature_json_name)
+
+    # Validation
+    valdir = os.path.join(inputdir, "pairs", "validation")
+    config_dict['validation'] = dict(
+        func_info_csv_path=os.path.join(valdir, "validation_functions.csv"),
+        features_validation_path=os.path.join(
+            featuresdir, 'Dataset-adv_validation',
+            feature_json_name)
+    )
 
 def update_config_datasetone(config_dict, inputdir, outputdir, featuresdir, feature_json_name):
     """Config for Dataset-1."""
@@ -316,6 +337,9 @@ def get_config(args):
 def update_config(config_dict, args):
     if args.dataset == 'one':
         update_config_datasetone(
+            config_dict, args.inputdir, args.outputdir, args.featuresdir, args.feature_json_name)
+    if args.dataset == 'adv':
+        update_config_datasetadv(
             config_dict, args.inputdir, args.outputdir, args.featuresdir, args.feature_json_name)
     elif args.dataset == 'rtos':
         update_config_datasetrtos(

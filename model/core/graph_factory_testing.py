@@ -62,6 +62,8 @@ class GraphFactoryTesting(GraphFactoryBase):
         for idx in tqdm(range(numIter), total=numIter):
             finfo = next(iterator_f)[1]
 
+            if finfo['fva'] not in self._fdict[finfo['idb']]:
+                continue
             f = self._fdict[finfo['idb']][finfo['fva']]
 
             batch_graphs.append(f['graph'])

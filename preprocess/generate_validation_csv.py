@@ -1,9 +1,9 @@
 import pandas as pd
 from os.path import join
 
-DB_DIR = "dbs"
-INPUT = join(DB_DIR, "Dataset-1/validation_Dataset-1.csv")
-OUTPUT = join(DB_DIR, "Dataset-1/pairs/validation/validation_functions.csv")
+DB_DIR = "dbs2"
+INPUT = join(DB_DIR, "Dataset-adv/validation_Dataset-adv.csv")
+OUTPUT = join(DB_DIR, "Dataset-adv/pairs/validation/validation_functions.csv")
 
 df = pd.read_csv(INPUT, index_col = 0)
 

@@ -168,7 +168,7 @@ def main():
                         help='Number of training epochs')
 
     parser.add_argument('--dataset', required=True,
-                        choices=['one', 'rtos', 'muaz'],
+                        choices=['one', 'rtos', 'muaz', 'adv'],
                         help='Choose the dataset to use for the train or test')
 
     parser.add_argument('--config', required=True,
@@ -196,7 +196,6 @@ def main():
     # Iter config items
     for config, desc, testing in iter_configs(args):
         # Setup GNNModel.
-        breakpoint()
         gnn_model = GNNModel(config)
 
         if testing:
