@@ -64,6 +64,9 @@ class GraphFactoryInference(GraphFactoryBase):
                 batch_features = list()
                 for _ in pair_iter:
                     r = next(iterator)[1]
+                    if r['fva'] not in self._fdict[r['idb_path']].keys():
+                        print("[*] skipped a func !")
+                        continue
                     g = self._fdict[r['idb_path']][r['fva']]
                     batch_graphs.append(g['graph'])
                     batch_features.append(g[self._features_type])

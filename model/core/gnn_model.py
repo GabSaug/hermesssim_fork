@@ -349,6 +349,7 @@ class GNNModel:
     def _save_checkpoint(self, epoch):
         """save checkpoints"""
         path = os.path.join(self._checkpoint_path, f"checkpoint_{epoch}.pt")
+        breakpoint()
         torch.save({
             'epoch': epoch,
             'model_state_dict': self._model.state_dict(),
@@ -386,6 +387,7 @@ class GNNModel:
                 self._checkpoint_path, self._config['checkpoint_name'])
         else:
             ckpt_to_restore = self._latest_checkpoint()
+
         if ckpt_to_restore:
             log.info("Loading trained model from: {}".format(ckpt_to_restore))
             state = self._restore_model(ckpt_to_restore)
@@ -508,6 +510,8 @@ class GNNModel:
         # Model restoring
         epoch_counter = 0
         if restore:
+            print("[****] IN restore")
+            breakpoint()
             state = self.restore_model()
             epoch_counter = state['epoch'] + \
                 1 if 'epoch' in state else epoch_counter
@@ -547,6 +551,7 @@ class GNNModel:
         batch_inputs = None
         max_node_size, max_edge_size = 0, 0
         total_num_epochs = self._config['training']['num_epochs']
+        breakpoint()
         while epoch_counter < self._config['training']['num_epochs']:
             log.info("Epoch %d", epoch_counter)
 

@@ -26,6 +26,7 @@ def main(args):
     function_df = load_function_metadata(args.functions_csv)
     embeddings = load_embeddings(args.embeddings)
 
+
     # Load the pairs
     print("[*] Loading function pairs...")
     pairs_df = pd.read_csv(args.pairs_csv)
@@ -40,8 +41,13 @@ def main(args):
         try:
             idx1 = function_df.index.get_loc(key1)
             idx2 = function_df.index.get_loc(key2)
+
         except KeyError:
             print(f"[!] Could not find one or both keys: {key1}, {key2}")
+            continue
+
+
+        if idx1 >= len(embeddings):
             continue
 
         emb1 = embeddings[idx1]
@@ -65,7 +71,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--pairs_csv", default="../../DBs/Dataset-Muaz/pairs/pairs_testing_Dataset-Muaz.csv", help="CSV file with function pairs")
+    parser.add_argument("--pairs_csv", default="./dbs/Dataset-1/pairs_testing_Dataset-Muaz.csv", help="CSV file with function pairs")
     parser.add_argument("--functions_csv", default="./dbs/Dataset-1/testing_Dataset-1.csv", help="CSV file with all function metadata")
     parser.add_argument("--embeddings", default="./outputs/Dataset-Muaz/testing_Dataset-1.pkl", help="Path to .pt file containing embeddings")
     parser.add_argument("--output", default="./pairs_results_Dataset-Muaz_hms.csv", help="Path to save output CSV with similarity scores")

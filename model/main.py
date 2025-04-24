@@ -119,7 +119,7 @@ def iter_configs(args):
 def model_train(gnn_model, config, desc):
     log.info("Running model training")
     dump_config_to_json(config, config['outputdir'])
-    best_val_auc, best_val_ckpt, last_ckpt = gnn_model.model_train()
+    best_val_auc, best_val_ckpt, last_ckpt = gnn_model.model_train(True)
     log.info(f"{desc}:\t{best_val_auc}")
 
     # Reload checkpoints for testing.
@@ -196,6 +196,7 @@ def main():
     # Iter config items
     for config, desc, testing in iter_configs(args):
         # Setup GNNModel.
+        breakpoint()
         gnn_model = GNNModel(config)
 
         if testing:

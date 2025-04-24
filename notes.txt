@@ -1,1 +1,5 @@
 - I named the dataset "Dataset-1" for ease of use, not"Dataset-Muaz"
+
+For the adversarial training:
+- dbs2 contains htings
+- inputs2 contains preprocessed things

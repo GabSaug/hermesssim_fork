@@ -7,6 +7,7 @@ rm ./pairs_results_Dataset-Muaz_hms.csv
 mkdir -p ./dbs/Dataset-1/cfg_summary/testing/
 mkdir -p ./dbs/Dataset-1/features/testing/
 cp ../../DBs/Dataset-Muaz/testing_Dataset-Muaz.csv ./dbs/Dataset-1/testing_Dataset-1.csv
+cp "../../DBs/Dataset-Muaz/pairs/pairs_testing_Dataset-Muaz.csv" ./dbs/Dataset-1/
 
 echo 1
 python3 lifting/dataset_summary.py \

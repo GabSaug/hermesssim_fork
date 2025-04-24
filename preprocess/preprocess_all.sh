@@ -2,8 +2,8 @@
 
 DATASET_NAME=${DATASET_NAME:-'Dataset-1'}
 FEAT=${FEAT:-'pcode_raw'}
-DBDIR=${DBDIR:-'dbs'}
-OUTDIR=${OUTDIR:-'inputs/pcode'}
+DBDIR=${DBDIR:-'dbs2'}
+OUTDIR=${OUTDIR:-'inputs2/pcode'}
 
 echo "Processing ${DATASET_NAME}_training"
 python preprocess/preprocessing_pcode.py \

@@ -7,7 +7,7 @@
             "feature_json_name": "graph_func_dict_opc_True.json"
         },
     "checkpoint_dir" : "experiments/representations/tscg/0/",
-    "outputdir" : "./outputs",
+    "outputdir" : "./output_finetune",
     "used_subgraphs": [1,2,3], 
      "ggnn_net": {"concat_skip": 0,
               "layer_aggr": "add",
