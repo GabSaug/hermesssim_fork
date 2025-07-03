@@ -3,6 +3,7 @@
 ## Compatibility: cfgs_folder: ../../DBs/Dataset-1/features/acfg_disasm/ ?
 #
 rm ./pairs_results_Dataset-Muaz_hms.csv
+rm dbs/Dataset-1/cfg_summary/testing/*
 
 mkdir -p ./dbs/Dataset-1/cfg_summary/testing/
 mkdir -p ./dbs/Dataset-1/features/testing/
@@ -22,7 +23,7 @@ python3 lifting/pcode_lifter.py \
     --output_dir ./dbs/Dataset-1/features/testing/pcode_raw_Dataset-1_testing \
     --graph_type ALL \
     --verbose 1 \
-    --nproc 32
+    --nproc 29
 
 # Preprocess input
 

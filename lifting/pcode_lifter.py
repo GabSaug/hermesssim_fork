@@ -83,16 +83,21 @@ def do_one_extractor(
     cmd = f"java {enable_assert} {heap_config} -jar {GSAT_BIN_PATH} pcode-extractor-v2 {bin_selector} \
         -f {bin_fp} -c {cfg_summary_fp} -of {graph_type} -v {verbose}\
         {prefer_raw} -o {output_fp}"
-    proc = subprocess.Popen(cmd, shell=True, text=True, stdout=subprocess.PIPE)
-    out, _ = proc.communicate()
+    proc = subprocess.Popen(cmd, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    out, err = proc.communicate()
     code = proc.returncode
     if (code != 0) or (not os.path.exists(output_fp)):
         print("[=] " + cmd)
+        print("[!] Return code:", code)
+        print("[!] STDOUT:")
+        print(out)
+        print("[!] STDERR:")
+        print(err)
         code = code if code is not None else -1
         return code, bin_fp
     cost = extract_time(out)
-    # print(f"[*] Saving {output_fp}")
     return None, cost
+
 
 
 def do_one_extractor_wrap(args):

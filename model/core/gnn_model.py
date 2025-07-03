@@ -303,6 +303,7 @@ class GNNModel:
         feature_name = "tscg"
         model_name = "graph-{}-{}-{}".format("ggnn",
                                              training_mode, feature_name)
+        print(f"MODEL NAME: {model_name}")
         return model_name
 
     def _get_debug_str(self, mean_accumulated_metrics):
