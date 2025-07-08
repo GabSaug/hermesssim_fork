@@ -103,10 +103,10 @@ def iter_configs(args):
                                                  args.outputdir, "tunning")
 
             if testing:
-                #config = load_config_from_json(args.outputdir)
-                config = {"training":dict(),
-                          "validation":dict(),
-                          "testing":dict()}
+                config = load_config_from_json(args.outputdir)
+                #config = {"training":dict(),
+                #          "validation":dict(),
+                #          "testing":dict()}
                 config = update_config(config, args)
             else:
                 config = get_config(args)

@@ -690,8 +690,8 @@ class GNNModel:
             if not self._inited:
                 self._model_initialize()
                 self.restore_model()
-                print(
-                    f"Tot. Param. {sum(p.numel() for p in self._model.parameters())}")
+                #print(
+                #    f"Tot. Param. {sum(p.numel() for p in self._model.parameters())}")
 
             batch_generator = data.DataLoader(
                 batch_generator, batch_size=None, persistent_workers=False,

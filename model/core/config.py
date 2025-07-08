@@ -188,6 +188,21 @@ def update_config_datasetrtos(config_dict, inputdir, outputdir, featuresdir, fea
             feature_json_name)
     )
 
+def update_config_datasetmuaz(config_dict, inputdir, outputdir, featuresdir, feature_json_name):
+    """Config for Dataset-Muaz."""
+    testdir = os.path.join(inputdir, "Dataset-Muaz")
+    config_dict['testing'] = dict(
+        infer_tasks=[
+            (
+                os.path.join(testdir, "testing_Dataset-Muaz.csv"),
+                os.path.join(outputdir, "testing_Dataset-Muaz.pkl"),
+            )
+        ],
+        features_testing_path=os.path.join(
+            featuresdir, 'Dataset-Muaz_testing',
+            feature_json_name)
+    )
+
 
 def get_config(args):
     """The default configs."""
@@ -340,6 +355,9 @@ def update_config(config_dict, args):
             config_dict, args.inputdir, args.outputdir, args.featuresdir, args.feature_json_name)
     if args.dataset == 'adv':
         update_config_datasetadv(
+            config_dict, args.inputdir, args.outputdir, args.featuresdir, args.feature_json_name)
+    if args.dataset == 'muaz':
+        update_config_datasetmuaz(
             config_dict, args.inputdir, args.outputdir, args.featuresdir, args.feature_json_name)
     elif args.dataset == 'rtos':
         update_config_datasetrtos(

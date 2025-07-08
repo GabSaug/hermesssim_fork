@@ -71,9 +71,9 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--pairs_csv", default="./dbs/Dataset-1/pairs_testing_Dataset-Muaz.csv", help="CSV file with function pairs")
-    parser.add_argument("--functions_csv", default="./dbs/Dataset-1/testing_Dataset-1.csv", help="CSV file with all function metadata")
-    parser.add_argument("--embeddings", default="./outputs/Dataset-Muaz/testing_Dataset-1.pkl", help="Path to .pt file containing embeddings")
+    parser.add_argument("--pairs_csv", default="./dbs/Dataset-Muaz/pairs_testing_Dataset-Muaz.csv", help="CSV file with function pairs")
+    parser.add_argument("--functions_csv", default="./dbs/Dataset-Muaz/testing_Dataset-1.csv", help="CSV file with all function metadata")
+    parser.add_argument("--embeddings", default="./outputs/experiments/hermes_sim/0/last/testing_Dataset-Muaz.pkl", help="Path to .pt file containing embeddings")
     parser.add_argument("--output", default="./pairs_results_Dataset-Muaz_hms.csv", help="Path to save output CSV with similarity scores")
     args = parser.parse_args()
     main(args)
