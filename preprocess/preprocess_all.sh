@@ -1,26 +1,28 @@
 #!/bin/sh
 
-DATASET_NAME=${DATASET_NAME:-'Dataset-adv'}
+DATASET_NAME=${DATASET_NAME:-'Dataset-Muaz'}
 FEAT=${FEAT:-'pcode_raw'}
-DBDIR=${DBDIR:-'dbs2'}
-OUTDIR=${OUTDIR:-'inputs2/pcode'}
+DBDIR=${DBDIR:-'dbs'}
+OUTDIR=${OUTDIR:-'inputs/pcode'}
 
-echo "Processing ${DATASET_NAME}_training"
-python preprocess/preprocessing_pcode.py \
-    --training \
-    --freq-mode -f pkl -s ${DATASET_NAME}_training \
-    -i $DBDIR/$DATASET_NAME/features/training/"$FEAT"_${DATASET_NAME}_training \
-    -o $OUTDIR
+# Function to check and process each split
+process_split() {
+    SPLIT=$1
+    SPLIT_DIR="$DBDIR/$DATASET_NAME/features/$SPLIT"
+    FEAT_FILE="$SPLIT_DIR/${FEAT}_${DATASET_NAME}_$SPLIT"
 
-echo "Processing ${DATASET_NAME}_validation"
-python preprocess/preprocessing_pcode.py \
-    --freq-mode -f pkl -s ${DATASET_NAME}_validation \
-    -i $DBDIR/$DATASET_NAME/features/validation/"$FEAT"_${DATASET_NAME}_validation \
-    -o $OUTDIR
+    if [ -d "$SPLIT_DIR" ]; then
+        echo "Processing ${DATASET_NAME}_$SPLIT"
+        python preprocess/preprocessing_pcode.py \
+            --freq-mode -f pkl -s ${DATASET_NAME}_$SPLIT \
+            -i "$FEAT_FILE" \
+            -o "$OUTDIR"
+    else
+        echo "Skipping ${DATASET_NAME}_$SPLIT: folder not found ($SPLIT_DIR)"
+    fi
+}
 
-echo "Processing ${DATASET_NAME}_testing"
-python preprocess/preprocessing_pcode.py \
-    --freq-mode -f pkl -s ${DATASET_NAME}_testing \
-    -i $DBDIR/$DATASET_NAME/features/testing/"$FEAT"_${DATASET_NAME}_testing \
-    -o $OUTDIR
+process_split "training"
+process_split "validation"
+process_split "testing"
 
