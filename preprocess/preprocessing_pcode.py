@@ -364,6 +364,8 @@ def process_one_file(args):
 
     for fva, graph_data in func_data.items():
         for gtype in GRAPH_TYPES:
+            if gtype not in graph_data.keys():
+                continue
             g_coo_mat, nodes = create_graph(graph_data[gtype])
             f_list = create_features_matrix(nodes, graph_data[gtype], opc_dicts[gtype], gtype, arch)
 

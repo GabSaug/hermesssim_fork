@@ -1,14 +1,18 @@
-set -e
-
+rm -r ./dbs/Dataset-Muaz/*
+rm -r ./inputs/pcode/pcode_iscg/Dataset-Muaz_testing
+rm -r ./inputs/pcode/pcode_sog/Dataset-Muaz_testing
+rm -r ./inputs/pcode/pcode_tscg/Dataset-Muaz_testing
 rm ./pairs_results_Dataset-Muaz_hms.csv
 
-mkdir ./dbs/Dataset-Muaz/cfg_summary/testing
+mkdir -p ./dbs/Dataset-Muaz/cfg_summary/testing
 mkdir -p ./dbs/Dataset-Muaz/features/testing/pcode_raw_Dataset-Muaz_testing
+
 cp ../../DBs/Dataset-Muaz/testing_Dataset-Muaz.csv ./dbs/Dataset-Muaz/
 cp "../../DBs/Dataset-Muaz/pairs/pairs_testing_Dataset-Muaz.csv" ./dbs/Dataset-Muaz/
+cp -r "../../DBs/Dataset-Muaz/features/acfg_disasm" ./dbs/Dataset-Muaz/features/testing/
 
 # relatively fast
-python3 lifting/dataset_summary.py --cfg_summary dbs/Dataset-Muaz/cfg_summary/testing --dataset_info_csv dbs/Dataset-Muaz/testing_Dataset-Muaz.csv --cfgs_folder ../../DBs/Dataset-Muaz/features/acfg_disasm/
+python3 lifting/dataset_summary.py --cfg_summary dbs/Dataset-Muaz/cfg_summary/testing --dataset_info_csv dbs/Dataset-Muaz/testing_Dataset-Muaz.csv --cfgs_folder ./dbs/Dataset-Muaz/features/testing/acfg_disasm/
 
 # very slow
 python3 lifting/pcode_lifter.py --cfg_summary ./dbs/Dataset-Muaz/cfg_summary/testing/ --output_dir ./dbs/Dataset-Muaz/features/testing/pcode_raw_Dataset-Muaz_testing --graph_type ALL --verbose 1 --nproc 30
